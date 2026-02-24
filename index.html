@@ -22,18 +22,263 @@
             --transition: all 0.3s ease;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Roboto', sans-serif;
-            color: var(--pink);
+            color: var(--dark);
             background-color: #f5f7fa;
             line-height: 1.6;
         }
+
+        h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; font-weight: 600; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        header { background-color: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { color: var(--primary); font-size: 2.2rem; }
+        .logo-text h1 { font-size: 1.8rem; color: var(--dark); margin-bottom: 5px; }
+        .logo-text p { color: var(--gray); font-size: 0.9rem; }
+
+        nav ul { display: flex; list-style: none; gap: 30px; }
+        nav a { text-decoration: none; color: var(--dark); font-weight: 500; transition: var(--transition); }
+        nav a:hover, nav a.active { color: var(--primary); }
+
+        .btn { padding: 10px 20px; border-radius: var(--radius); font-weight: 500; cursor: pointer; transition: var(--transition); border: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-outline { background-color: transparent; color: var(--primary); border: 1px solid var(--primary); }
+        .btn-accent { background-color: var(--secondary); color: white; }
+
+        /* Hero */
+        .hero { padding: 60px 0; background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); }
+        .hero-content { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .hero-image img { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); }
+
+        /* Queue & Dashboard */
+        .queue-section, .dashboard { padding: 60px 0; }
+        .queue-container { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+        .queue-display, .queue-form, .appointments { background: white; padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid var(--light-gray); border-radius: var(--radius); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--light-gray); text-align: left; }
+        .status { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; text-transform: capitalize; }
+        .status.waiting { background: #fef7e0; color: #f6b100; }
+        .status.completed { background: #e6f4ea; color: var(--secondary); }
+        
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 1rem; margin-right: 10px; }
+        .edit-btn { color: var(--primary); }
+        .delete-btn { color: var(--accent); }
+
+        footer { background: var(--dark); color: white; padding: 40px 0; text-align: center; margin-top: 40px; }
+
+        @media (max-width: 992px) { .hero-content, .queue-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-hospital-alt"></i></div>
+                <div class="logo-text"><h1>Bati Hospital</h1><p>Queue Management</p></div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#queue">Queue</a></li>
+                    <li><a href="#appointments">Appointments</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="document.getElementById('queue').scrollIntoView()">Join Queue</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2>Modern Healthcare Management</h2>
+                    <p>Register for the queue, track your status in real-time, and manage appointments efficiently.</p>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80" alt="Hospital">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="queue-section" id="queue">
+        <div class="container">
+            <div class="queue-container">
+                <div class="queue-form">
+                    <h3 id="formTitle">Patient Registration</h3>
+                    <p style="margin-bottom: 15px; color: var(--gray);">Enter details to join the live queue</p>
+                    <input type="hidden" id="editIndex" value="-1">
+                    
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="patientName" class="form-control" placeholder="Full Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select id="department" class="form-control">
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Pediatrics">Pediatrics</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="General Medicine">General Medicine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Doctor</label>
+                        <input type="text" id="doctorName" class="form-control" placeholder="Doctor Name">
+                    </div>
+                    
+                    <button class="btn btn-accent" style="width: 100%;" onclick="saveAppointment()">
+                        <i class="fas fa-check-circle"></i> <span id="submitBtnText">Submit Registration</span>
+                    </button>
+                    <button id="cancelEdit" class="btn btn-outline" style="width: 100%; margin-top: 10px; display: none;" onclick="resetForm()">Cancel Edit</button>
+                </div>
+
+                <div class="queue-display">
+                    <h3>Current Queue Status</h3>
+                    <div style="text-align: center; padding: 20px;">
+                        <p>Currently Serving</p>
+                        <h2 style="font-size: 3rem; color: var(--primary);" id="nowServing">None</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard" id="appointments">
+        <div class="container">
+            <div class="appointments">
+                <h3>Today's Patient List</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Department</th>
+                                <th>Doctor</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Bati Hospital Management System</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA LOGIC ---
+        // Initialize data from LocalStorage or empty array
+        let appointments = JSON.parse(localStorage.getItem('bati_data')) || [];
+
+        function saveAppointment() {
+            const name = document.getElementById('patientName').value;
+            const dept = document.getElementById('department').value;
+            const doctor = document.getElementById('doctorName').value;
+            const editIndex = document.getElementById('editIndex').value;
+
+            if (!name || !doctor) return alert("Please fill all fields");
+
+            if (editIndex === "-1") {
+                // INSERT
+                appointments.push({ name, dept, doctor, status: 'waiting' });
+            } else {
+                // UPDATE
+                appointments[editIndex] = { ...appointments[editIndex], name, dept, doctor };
+            }
+
+            updateStorageAndUI();
+            resetForm();
+        }
+
+        function deleteAppointment(index) {
+            if (confirm("Remove this patient from the queue?")) {
+                appointments.splice(index, 1);
+                updateStorageAndUI();
+            }
+        }
+
+        function editAppointment(index) {
+            const app = appointments[index];
+            document.getElementById('patientName').value = app.name;
+            document.getElementById('department').value = app.dept;
+            document.getElementById('doctorName').value = app.doctor;
+            document.getElementById('editIndex').value = index;
+            
+            // UI Updates
+            document.getElementById('formTitle').innerText = "Update Record";
+            document.getElementById('submitBtnText').innerText = "Save Changes";
+            document.getElementById('cancelEdit').style.display = "block";
+            document.getElementById('queue').scrollIntoView();
+        }
+
+        function updateStorageAndUI() {
+            localStorage.setItem('bati_data', JSON.stringify(appointments));
+            renderTable();
+            updateNowServing();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('appointmentTableBody');
+            tbody.innerHTML = '';
+
+            appointments.forEach((app, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${app.name}</td>
+                        <td>${app.dept}</td>
+                        <td>${app.doctor}</td>
+                        <td><span class="status ${app.status}">${app.status}</span></td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editAppointment(${index})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete-btn" onclick="deleteAppointment(${index})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateNowServing() {
+            const serving = appointments.find(a => a.status === 'waiting');
+            document.getElementById('nowServing').innerText = serving ? serving.name : "No Patients";
+        }
+
+        function resetForm() {
+            document.getElementById('patientName').value = '';
+            document.getElementById('doctorName').value = '';
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('formTitle').innerText = "Patient Registration";
+            document.getElementById('submitBtnText').innerText = "Submit Registration";
+            document.getElementById('cancelEdit').style.display = "none";
+        }
+
+        // Initial Load
+        renderTable();
+        updateNowServing();
+    </script>
+</body>
+</html>
 
         h1, h2, h3, h4, h5 {
             font-family: 'Poppins', sans-serif;
@@ -1130,4 +1375,5 @@
         });
     </script>
 </body>
+
 </html>
